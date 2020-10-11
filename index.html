@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hello World</title>
+    <style>
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"></script>
+</head>
+<body>
+
+<div id="game"></div>
+
+
+Ping:
+<input type="text" id="pingMedian" value="100"/>
+&pm;
+<input type="text" id="pingVariation" value="20"/>
+ms.
+<br/>
+<button id="setPing" data-median="#pingMedian" data-variation="#pingVariation">Set ping</button>
+
+<script type="module">
+    import main from './src/main.js';
+
+    Object.assign(window,
+        {
+            Graphics: PIXI.Graphics,
+            Application: PIXI.Application,
+            loader: PIXI.Loader.shared,
+            resources: PIXI.Loader.shared.resources,
+            Sprite: PIXI.Sprite,
+            TextureCache: PIXI.utils.TextureCache,
+        });
+
+    const container = document.querySelector("#game");
+    main(container);
+</script>
+</body>
+</html>
