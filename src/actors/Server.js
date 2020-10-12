@@ -70,7 +70,7 @@ export const Server = ({container, receiveUpdate}) => {
                         y: player.getPosition().y,
                         speed: player.getSpeed(),
                     }),
-                    Math.random() * pingVariation
+                    Math.random() * pingVariation * 2
                 );
             },
             pingMedian - pingVariation // ms
