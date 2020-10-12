@@ -1,4 +1,9 @@
+import { PlayerModel } from "./PlayerModel.js";
+
+
 export const Player = ({container, x, y, server: {sendMessage}, wasd}) => {
+    const model = PlayerModel({ x, y, wasd });
+
     // graphics
     const sprite =
         new Graphics()
@@ -35,11 +40,12 @@ export const Player = ({container, x, y, server: {sendMessage}, wasd}) => {
 
     // public API
     const receiveUpdate = ({x, y, speed}) => {
-        const delta = Math.min(1, deltaFrames()/60);
-        let px = interpolate(sprite.x, sprite.x + vx*60, delta);
-        let py = interpolate(sprite.y, sprite.y + vy*60, delta);
-        sprite.x = (px + x)/2;
-        sprite.y = (py + y)/2;
+        const delta = Math.min(1, deltaFrames()/20);
+        let px = model.getPosition().x;
+        let py = model.getPosition().y;
+        sprite.x = (px + interpolate(px, x, delta))/2;
+        sprite.y = (py + interpolate(py, y, delta))/2;
+        model.setPosition({x: sprite.x, y: sprite.y});
         target.x = x;
         target.y = y;
         vx = speed.x;
@@ -67,11 +73,9 @@ export const Player = ({container, x, y, server: {sendMessage}, wasd}) => {
                 });
             }
 
-        vx *= 0.95;
-        vy *= 0.95;
-
-        sprite.x += vx;
-        sprite.y += vy;
+        model.update();
+        sprite.x = model.getPosition().x;
+        sprite.y = model.getPosition().y;
     };
 
     const onDestroy = () => {

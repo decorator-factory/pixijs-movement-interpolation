@@ -33,7 +33,10 @@ export const setup = ({app}) => {
         server: { sendMessage },
     });
 
-    const server = Server({ container, receiveUpdate });
+    const server = Server({
+        container,
+        receiveUpdate,
+    });
     const setPingButton = document.querySelector("#setPing");
     setPingButton.onclick = () => {
         const median =

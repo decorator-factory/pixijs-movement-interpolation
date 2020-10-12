@@ -1,3 +1,6 @@
+import { PlayerModel } from "./PlayerModel.js";
+
+
 export const Server = ({container, receiveUpdate}) => {
     // graphics
     const sprite =
@@ -10,10 +13,16 @@ export const Server = ({container, receiveUpdate}) => {
 
     // instance variables
     let initialized = false;
-    let playerVx = 0;
-    let playerVy = 0;
-    let playerX = 0;
-    let playerY = 0;
+    const player = PlayerModel({
+        x: 0,
+        y: 0,
+        wasd: {
+            right: () => playerKeys.right,
+            left: () => playerKeys.left,
+            up: () => playerKeys.up,
+            down: () => playerKeys.down,
+        }
+    });
     let playerKeys = { right: false, left: false, up: false, down: false };
     let intervalID = null;
 
@@ -22,16 +31,6 @@ export const Server = ({container, receiveUpdate}) => {
 
 
     // private methods
-    const playerAcceleration = () => {
-        let dx = playerKeys.right - playerKeys.left;
-        let dy = playerKeys.down - playerKeys.up;
-        if (dx*dx + dy*dy === 2){
-            dx *= Math.SQRT1_2;
-            dy *= Math.SQRT1_2;
-        }
-        return {x: dx*0.5, y: dy*0.5};
-    };
-
     const restart = () => {
         stop();
         start();
@@ -45,8 +44,7 @@ export const Server = ({container, receiveUpdate}) => {
             () => {
                 if (message === "initialPosition" && !initialized){
                     initialized = true;
-                    playerX = m.x;
-                    playerY = m.y;
+                    player.setPosition({x: m.x, y: m.y});
                 }
                 if (message === "movement") {
                     const {direction, on} = m;
@@ -68,9 +66,9 @@ export const Server = ({container, receiveUpdate}) => {
 
                 setTimeout(
                     () => receiveUpdate({
-                        x: playerX,
-                        y: playerY,
-                        speed: {x: playerVx, y: playerVy},
+                        x: player.getPosition().x,
+                        y: player.getPosition().y,
+                        speed: player.getSpeed(),
                     }),
                     Math.random() * pingVariation
                 );
@@ -91,28 +89,9 @@ export const Server = ({container, receiveUpdate}) => {
         if (!initialized)
             return;
 
-        const {x: ax, y: ay} = playerAcceleration();
-        playerVx += ax;
-        playerVy += ay;
-
-        {
-            const vSquared = playerVx*playerVx + playerVy*playerVy
-            if (vSquared > 100){
-                const cosPhi = playerVx/vSquared;
-                const sinPhi = playerVy/vSquared;
-                playerVx = cosPhi * 10;
-                playerVy = sinPhi * 10;
-            }
-        }
-
-        playerX += playerVx;
-        playerY += playerVy;
-
-        playerVx *= 0.95;
-        playerVy *= 0.95;
-
-        sprite.x = playerX;
-        sprite.y = playerY;
+        player.update();
+        sprite.x = player.getPosition().x;
+        sprite.y = player.getPosition().y;
     };
 
     const onDestroy = () => {
