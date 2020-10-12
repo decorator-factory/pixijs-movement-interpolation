@@ -51,8 +51,8 @@ export const Player = ({container, x, y, server: {sendMessage}, wasd}) => {
         vx = speed.x;
         vy = speed.y;
         model.setSpeed({
-            x: (vx*2 + model.getSpeed().x)/3,
-            y: (vy*2 + model.getSpeed().y)/3
+            x: vx,
+            y: vy,
         });
         lastUpdateTime = Date.now();
     };
